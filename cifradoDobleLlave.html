@@ -1,0 +1,228 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Cifrado Por Columnas (Doble con llave)</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">        
+
+        <!--Prism-->
+        <link href="prism.css" rel="stylesheet" />
+
+    </head>
+
+    <body id="ciphers">
+        <div id="head-wrapper">
+            <figure class="text-center">
+                <blockquote class="blockquote">
+                  <p><h1>Criptografía</h1></p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                    <h3>Cifrado Por Columnas (Doble con llave)</h3>
+                </figcaption>
+            </figure>
+        </div>
+
+
+    
+        <script type="text/javascript">
+            function Encrypt() {
+                mensajeclaro = document.getElementById("p").value.toUpperCase().replace(/[^A-Z]/g, "");  
+                if(mensajeclaro.length < 1){ alert("Por favor ingrese el mensaje en claro"); return; }    
+                var key = document.getElementById("key").value.toUpperCase().replace(/[^A-Z]/g, "");  
+                var pc = document.getElementById("pc").value.toUpperCase().replace(/[^A-Z]/g, "");
+                if(pc=="") pc = "x";    
+                
+                while(mensajeclaro.length % key.length != 0) mensajeclaro += pc.charAt(0);    
+                var colLength = mensajeclaro.length / key.length;
+                criptointer = "";
+                for(i=0; i < key.length; i++){
+                    for(j=0; j < colLength; j++) criptointer += mensajeclaro.charAt(j*key.length+i);
+                }
+
+                while(criptointer.length % key.length != 0) criptointer += pc.charAt(0);    
+                colLength = criptointer.length / key.length;
+                alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; 
+                criptograma = ""; k=0;
+                for(i=0; i < key.length; i++){
+                    while(k<26){
+                        t = key.indexOf(alfabeto.charAt(k));
+                        arrkw = key.split(""); arrkw[t] = "_"; key = arrkw.join("");
+                        if(t >= 0) break;
+                        else k++;
+                    }
+                    for(j=0; j < colLength; j++) criptograma += criptointer.charAt(j*key.length + t);
+                }
+                document.getElementById("c").value = criptograma;
+            }
+
+            function Decrypt(f) {
+                criptograma = document.getElementById("c").value.toUpperCase().replace(/[^A-Z]/g, "");  
+                if(criptograma.length < 1){ alert("Por favor ingrese un texto cifrado (solo letras)"); return; }    
+                clave = document.getElementById("key").value.toUpperCase().replace(/[^A-Z]/g, ""); 
+                klen = clave.length;
+                if(klen <= 1){ alert("La palabra clave debe tener al menos 2 caracteres."); return; }
+                if(criptograma.length % klen != 0){ alert("El texto cifrado no se ha rellenado, el resultado puede ser incorrecto (¿palabra clave incorrecta?)."); }
+                // first we put the text into columns based on keyword length
+                var cols = new Array(klen);
+                var colLength = criptograma.length / klen;
+                for(i=0; i < klen; i++) cols[i] = criptograma.substr(i*colLength,colLength);
+                // now we rearrange the columns so that they are in their unscrambled state
+                var newcols = new Array(klen);
+                alfabeto="ABCDEFGHIJKLMNOPQRSTUVWXYZ"; j=0;i=0;
+                while(j<klen){
+                    t=clave.indexOf(alfabeto.charAt(i));        
+                    if(t >= 0){
+                        newcols[t] = cols[j++];
+                        arrkw = clave.split(""); arrkw[t] = "_"; clave = arrkw.join("");
+                    }else i++;         
+                }    
+                // now read off the columns row-wise
+                criptointer = "";
+                for(i=0; i < colLength; i++){
+                    for(j=0; j < klen; j++) criptointer += newcols[j].charAt(i);
+                }
+                
+                cols = new Array(klen);
+                colLength = criptointer.length / klen;
+                for(i=0; i < klen; i++) cols[i] = criptointer.substr(i*colLength,colLength);
+                mensajeclaro = "";
+                for(i=0; i < colLength; i++){
+                    for(j=0; j < klen; j++) mensajeclaro += cols[j].charAt(i);
+                }
+                document.getElementById("p").value = mensajeclaro;    
+            }
+        </script>
+
+        
+        <div class="container-sm">
+            <div class="row">
+                <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vSlJLtJzOz5HfMvHJ5GB03STu7WU6AbyJIyBXhcyA2jV1dX27q45l8tiFuli3FoQQqsg1UiOVu2dBjl/embed?start=false&loop=false&delayms=60000" frameborder="0" width="1440" height="839" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+            </div>
+
+            <div class="row">
+                <pre>
+                    <code class="language-javascript">
+                        <script type="text/javascript">
+                            function Encrypt() {
+                                mensajeclaro = document.getElementById("p").value.toUpperCase().replace(/[^A-Z]/g, "");  
+                                if(mensajeclaro.length < 1){ alert("Por favor ingrese el mensaje en claro"); return; }    
+                                var key = document.getElementById("key").value.toUpperCase().replace(/[^A-Z]/g, "");  
+                                var pc = document.getElementById("pc").value.toUpperCase().replace(/[^A-Z]/g, "");
+                                if(pc=="") pc = "x";    
+                                
+                                while(mensajeclaro.length % key.length != 0) mensajeclaro += pc.charAt(0);    
+                                var colLength = mensajeclaro.length / key.length;
+                                criptointer = "";
+                                for(i=0; i < key.length; i++){
+                                    for(j=0; j < colLength; j++) criptointer += mensajeclaro.charAt(j*key.length+i);
+                                }
+
+                                while(criptointer.length % key.length != 0) criptointer += pc.charAt(0);    
+                                colLength = criptointer.length / key.length;
+                                alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; 
+                                criptograma = ""; k=0;
+                                for(i=0; i < key.length; i++){
+                                    while(k<26){
+                                        t = key.indexOf(alfabeto.charAt(k));
+                                        arrkw = key.split(""); arrkw[t] = "_"; key = arrkw.join("");
+                                        if(t >= 0) break;
+                                        else k++;
+                                    }
+                                    for(j=0; j < colLength; j++) criptograma += criptointer.charAt(j*key.length + t);
+                                }
+                                document.getElementById("c").value = criptograma;
+                            }
+
+                            function Decrypt(f) {
+                                criptograma = document.getElementById("c").value.toUpperCase().replace(/[^A-Z]/g, "");  
+                                if(criptograma.length < 1){ alert("Por favor ingrese un texto cifrado (solo letras)"); return; }    
+                                clave = document.getElementById("key").value.toUpperCase().replace(/[^A-Z]/g, ""); 
+                                klen = clave.length;
+                                if(klen <= 1){ alert("La palabra clave debe tener al menos 2 caracteres."); return; }
+                                if(criptograma.length % klen != 0){ alert("El texto cifrado no se ha rellenado, el resultado puede ser incorrecto (¿palabra clave incorrecta?)."); }
+                                // first we put the text into columns based on keyword length
+                                var cols = new Array(klen);
+                                var colLength = criptograma.length / klen;
+                                for(i=0; i < klen; i++) cols[i] = criptograma.substr(i*colLength,colLength);
+                                // now we rearrange the columns so that they are in their unscrambled state
+                                var newcols = new Array(klen);
+                                alfabeto="ABCDEFGHIJKLMNOPQRSTUVWXYZ"; j=0;i=0;
+                                while(j<klen){
+                                    t=clave.indexOf(alfabeto.charAt(i));        
+                                    if(t >= 0){
+                                        newcols[t] = cols[j++];
+                                        arrkw = clave.split(""); arrkw[t] = "_"; clave = arrkw.join("");
+                                    }else i++;         
+                                }    
+                                // now read off the columns row-wise
+                                criptointer = "";
+                                for(i=0; i < colLength; i++){
+                                    for(j=0; j < klen; j++) criptointer += newcols[j].charAt(i);
+                                }
+                                
+                                cols = new Array(klen);
+                                colLength = criptointer.length / klen;
+                                for(i=0; i < klen; i++) cols[i] = criptointer.substr(i*colLength,colLength);
+                                mensajeclaro = "";
+                                for(i=0; i < colLength; i++){
+                                    for(j=0; j < klen; j++) mensajeclaro += cols[j].charAt(i);
+                                }
+                                document.getElementById("p").value = mensajeclaro;    
+                            }
+                        </script>
+                    </code>
+                </pre>
+
+            </div>
+
+            <div class="row">
+                <div>
+                    <h3>
+                        Ejemplo
+                        <small class="text-success">En JavaScript</small>
+                    </h3>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><i class="far fa-comment-dots"></i> Mensaje en claro</label>
+                    <textarea class="form-control shadow p-3 mb-5 bg-body rounded" id="p" rows="4" cols="50" wrap="soft" placeholder="Ingrese un mensaje en claro"></textarea>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-5">
+                        <label class="form-label"><i class="fas fa-key"></i> Llave</label>
+                        <input class="form-control form-control-lg" id="key" name="key" size="10" value="" type="text" placeholder="Ingrese la llave de encriptación" aria-label="default input example">
+                    </div>
+                    <div class="col-2">
+                        <label class="form-label"><i class="fas fa-info"></i> Caracter de relleno</label>
+                        <input class="form-control form-control-lg" id="pc" name="pc" size="1" value="x" type="text" placeholder="Ingrese el caracter de relleno" aria-label="default input example">
+                    </div>
+                    <div class="col-5 d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button class="btn btn-primary me-md-2 btn-lg bg-success bg-gradient" name="btnEn" onclick="Encrypt()" type="button">Cifrar <i class="far fa-arrow-alt-circle-down"></i></button>
+                        <button class="btn btn-primary btn-lg bg-success bg-gradient" name="btnDe" onclick="Decrypt()" type="button">Descifrar <i class="far fa-arrow-alt-circle-up"></i></button>
+                    </div>
+
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><i class="fas fa-lock"></i> Criptograma</label>
+                    <textarea class="form-control shadow p-3 mb-5 bg-body rounded" id="c" name="c" rows="4" cols="50" placeholder="Ingrese un criptograma"></textarea>
+                </div>
+
+            </div>
+
+
+        </div>
+
+        <!-- Bootstrap Bundle with Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+        <!-- Icons FontAwesome-->
+        <script src="https://kit.fontawesome.com/2f330924ef.js" crossorigin="anonymous"></script>
+
+        <!--Script Prism-->
+        <script src="prism.js"></script>
+    </body>
+</html>
